@@ -1,0 +1,118 @@
+esphome:
+  name: office-control
+  friendly_name: office-control
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "3k7M42y3Zlea5vjH2kPsn1s+WFmhHUWCKXTDKP6JERE="
+
+ota:
+  - platform: esphome
+    password: "67d7361daf24bfb889799c21dd059347"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  domain: .home.cowley.tech
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Office-Control Fallback Hotspot"
+    password: "SeUhR5YOnJD4"
+
+captive_portal:
+
+web_server:
+
+# Activates prometheus /metrics endpoint
+prometheus:
+
+# Enable I²C or other components if you need them later
+#i2c:
+#  sda: GPIO3
+#  scl: GPIO4
+#  scan: true   # optional, helps confirm OLED address
+#
+#display:
+#  - platform: ssd1306_i2c
+#    model: "SSD1306 128x64"
+#    address: 0x3C
+#    rotation: 0
+#    lambda: |-
+#      it.print(0, 0, id(font_small), "Encoder 1:");
+#      it.printf(0, 12, id(font_small), "%d", id(encoder1).state);
+#      it.print(0, 28, id(font_small), "Encoder 2:");
+#      it.printf(0, 40, id(font_small), "%d", id(encoder2).state);
+#
+#font:
+#  - file: "gfonts://Roboto"
+#    id: font_small
+#    size: 12
+
+# -------------------------------
+# Rotary Encoders
+# -------------------------------
+sensor:
+  - platform: rotary_encoder
+    name: "Encoder 1 Position"
+    id: encoder1
+    pin_a: GPIO6
+    pin_b: GPIO7
+    resolution: 2
+    filters:
+      - throttle: 100ms
+    on_value:
+      then:
+        - logger.log:
+            format: "Encoder 1 position: %d"
+            args: [ 'x' ]
+
+  - platform: rotary_encoder
+    name: "Encoder 2 Position"
+    id: encoder2
+    pin_a: GPIO20
+    pin_b: GPIO21
+    resolution: 2
+    filters:
+      - throttle: 100ms
+    on_value:
+      then:
+        - logger.log:
+            format: "Encoder 2 position: %d"
+            args: [ 'x' ]
+
+# -------------------------------
+# Encoder Buttons
+# -------------------------------
+binary_sensor:
+  - platform: gpio
+    name: "Encoder 1 Button"
+    pin:
+      number: GPIO08
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    on_press:
+      then:
+        - logger.log: "Encoder 1 button pressed"
+
+  - platform: gpio
+    name: "Encoder 2 Button"
+    pin:
+      number: GPIO09
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    on_press:
+      then:

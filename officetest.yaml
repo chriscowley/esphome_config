@@ -1,0 +1,195 @@
+substitutions:
+  device_name: "officetest"
+  friendly_name: "Office Test"
+  bedroom_lamp: "0x04e3e5fffe318927"
+
+esphome:
+  name: "officetest"
+  friendly_name: "${friendly_name}"
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+mqtt:
+  id: mqtt_client
+  broker: 192.168.6.206
+  topic_prefix: "esphome/${device_name}"
+  
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "PsAOVhvZdt3gEdCzPBDGFGMtsSD4mHNZAtQlrYjp5ZQ="
+
+ota:
+  - platform: esphome
+    password: "2c2bc59e6770800acc93d1a5712c0939"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  domain: .home.cowley.tech
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Office Fallback Hotspot"
+    password: "11DqNuGKHLDL"
+
+captive_portal:
+
+# Example configuration entry
+web_server:
+
+# Activates prometheus /metrics endpoint
+prometheus:
+
+one_wire:
+  - platform: gpio
+    pin: GPIO27
+sensor:
+  - platform: dallas_temp
+    address: 0xb34a26c435646128 
+    name: temperature
+    id: temp_sensor
+    update_interval: 60s
+
+#light:
+#  - platform: esp32_rmt_led_strip
+#    id: led_strip
+#    name: "Living Room LED Strip"
+#    pin: GPIO32         # Choose your data pin
+#    num_leds: 30        # Number of LEDs in your strip
+#    rgb_order: GRB      # WS2812B uses GRB
+#    chipset: ws2812
+
+  #- platform: adc
+  #  pin: GPIO34
+  #  name: "Brightness knob"
+  #  update_interval: 500ms
+  #  attenuation: 12db
+  #  filters:
+  #    - lambda: |-
+  #        const float min_v = 0.142;  
+  #        const float max_v = 3.16;  
+  #        float val = (x - min_v) / (max_v - min_v);
+  #        if (val < 0) val = 0;
+  #        if (val > 1) val = 1;
+  #        return val * 255.0;
+  #    - delta: 5.0
+  #    - sliding_window_moving_average:
+  #        window_size: 10
+  #        send_every: 5
+      #S- multiply: 255.0
+    #on_value:
+    #  then:
+    #    - lambda: |-
+    #        if (x < 30) {
+    #          // If brightness below 30, turn off light
+    #          id(mqtt_client)->publish_json("zigbee2mqtt/${bedroom_lamp}/set", [&](JsonObject root) {
+    #            root["state"] = "OFF";
+    #          });
+    #        } else {
+    #          // Otherwise, set brightness normally
+    #          id(mqtt_client)->publish_json("zigbee2mqtt/${bedroom_lamp}/set", [&](JsonObject root) {
+    #            root["state"] = "ON";
+    #            root["brightness"] = (int)x;
+    #            root["transition"] = 0.4;
+    #          });
+    #        }  
+    #on_value: 
+    #  then:
+    #    - mqtt.publish_json: 
+    #        topic: zigbee2mqtt/0x04e3e5fffe318927/set
+    #        payload: |-
+    #          root["brightness"] = (int)x;
+
+  #- platform: uptime
+  #  name: "Uptime Sensor"
+  #  id: uptime_sensor
+  #  update_interval: 30s
+
+    #on_value:
+    #  - mqtt.publish:
+    #      topic: "temperature"
+    #      payload: !lambda |-
+    #        return to_string(x);
+
+
+#switch:
+#- platform: gpio
+#  name: Green Status LED
+#  pin: GPIO26
+#  restore_mode: RESTORE_DEFAULT_OFF
+
+
+  
+
+i2c:
+  sda: GPIO25  # Custom SDA pin
+  scl: GPIO26  # Custom SCL pin
+  scan: true
+  frequency: 400kHz
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x32"
+    address: 0x3C
+    lambda: |-
+      if (id(oled_text).has_state() && id(oled_text).state != "__default__") {
+        it.print(0, 0, id(my_font), id(oled_text).state.c_str());
+      } else {
+        it.print(0, 0, id(my_font), "Office");
+      }
+
+font:
+  - file: "gfonts://Roboto"
+    id: my_font
+    size: 14
+      
+text_sensor:
+  - platform: homeassistant
+    name: "OLED Text"
+    entity_id: input_text.oled_message
+    id: oled_text
+#font:
+#  # Main font for text
+#  - file: "gfonts://Roboto"
+#    id: text_font
+#    size: 10
+#    #glyphs: |
+#    #  abcdefghijklmnopqrstuvwxyz
+#    #  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+#    #  0123456789:.-()°
+
+# OLED Display Configuration
+#display:
+#  - platform: ssd1306_i2c
+#    model: "SSD1306 128x32"
+#    address: 0x3C  # Most common address, but yours might be 0x3D
+#    update_interval: 5s
+#    lambda: |-
+#      static int last_uptime = 0;
+#      static float last_temp = -100;
+#      
+#      int current_uptime = (int)id(uptime_sensor).state;
+#      float current_temp = id(temp_sensor).state;
+#      
+#      if (it.get_tx_begun() || last_uptime != current_uptime || fabs(last_temp - current_temp) > 0.1) {
+#        it.fill(0x00);
+#        
+#        // Display temperature without special characters
+#        if (isnan(current_temp)) {
+#          it.print(0, 0, id(text_font), "Temp: ---");
+#        } else {
+#          it.printf(0, 0, id(text_font), "Temp: %.1f C", current_temp);
+#        }
+#        
+#        // Display uptime on second line
+#        it.printf(0, 16, id(text_font), "Uptime: %d s", current_uptime);
+#        
+#        last_uptime = current_uptime;
+#        last_temp = current_temp;
+#      }
