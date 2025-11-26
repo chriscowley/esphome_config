@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: esphome-validate
+        name: Validate ESPHome YAML
+        entry: bash -c 'for f in $(git diff --cached --name-only --diff-filter=ACM | grep -E "^(?!\.pre-commit-config\.yaml$).*\.(ya?ml)$"); do echo "🔍 Validating $f" && esphome config "$f" || exit 1; done'
+        language: system
+        pass_filenames: false
+
