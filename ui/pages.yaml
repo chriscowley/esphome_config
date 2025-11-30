@@ -35,14 +35,14 @@
          pad_row: 6
          pad_column: 8
        widgets:
-         #- label:
-         #    id: ui_time_label
-         #    grid_cell_column_pos: 0 # place the widget in
-         #    grid_cell_row_pos: 0 # the corresponding cell
-         #    text: "Loading..."
-         #    text_font: normal_font
-         #    text_color: 0xFFFFFF
-         #    bg_color: 0x000000
+         - label:
+             id: ui_temp_label
+             grid_cell_column_pos: 0 # place the widget in
+             grid_cell_row_pos: 0 # the corresponding cell
+             text: "Loading..."
+             text_font: normal_font
+             text_color: 0xFFFFFF
+             bg_color: 0x000000
          
          - button:
              id: office_temp_down
