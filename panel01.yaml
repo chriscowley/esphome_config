@@ -7,47 +7,7 @@ esp32:
   board: esp32dev
   framework:
     type: esp-idf
-#
-## Enable logging
-#logger:
-#
-## Enable Home Assistant API
-#api:
-#  encryption:
-#    key: "kDAX5GzPV7MDrYGVtTNGQH4VrvVrMzKzuy8YndRi9qs="
-#  on_client_connected:
-#    - if:
-#        condition:
-#          lambda: 'return (0 == client_info.find("Home Assistant "));'
-#        then:
-#          - lvgl.widget.show: lbl_hastatus
-#  on_client_disconnected:
-#    - if:
-#        condition:
-#          lambda: 'return (0 == client_info.find("Home Assistant "));'
-#        then:
-#          - lvgl.widget.hide: lbl_hastatus
-#
-#ota:
-#  - platform: esphome
-#    password: "9169daeb729bac3aef66d7320dd2ea52"
-#
-#wifi:
-#  ssid: !secret wifi_ssid
-#  password: !secret wifi_password
-#  domain: .home.cowley.tech
-#  reboot_timeout:
-#    minutes: 10
-#
-#  # Enable fallback hotspot (captive portal) in case wifi connection fails
-#  ap:
-#    ssid: "Panel01 Fallback Hotspot"
-#    password: "gSoEuEx7vc2j"
-#
-#captive_portal:
-#
-#web_server:
-#
+
 packages:
   common: !include common/common.yaml
 #  display: !include display/display.yaml
