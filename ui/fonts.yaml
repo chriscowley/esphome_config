@@ -1,0 +1,14 @@
+#font:
+- file: "gfonts://Roboto"
+  id: big_font
+  size: 24
+  extras:
+    - file: "fonts/materialdesignicons-webfont.ttf"
+      glyphs: !include glyphs.yaml
+
+- file: "gfonts://Roboto"
+  id: normal_font
+  size: 18
+  extras:
+    - file: "fonts/materialdesignicons-webfont.ttf"
+      glyphs: !include glyphs.yaml

@@ -1,3 +1,4 @@
+# esphome-entrypoint
 esphome:
   name: panel01
   friendly_name: panel01
@@ -6,49 +7,51 @@ esp32:
   board: esp32dev
   framework:
     type: esp-idf
-
-# Enable logging
-logger:
-
-# Enable Home Assistant API
-api:
-  encryption:
-    key: "kDAX5GzPV7MDrYGVtTNGQH4VrvVrMzKzuy8YndRi9qs="
-  on_client_connected:
-    - if:
-        condition:
-          lambda: 'return (0 == client_info.find("Home Assistant "));'
-        then:
-          - lvgl.widget.show: lbl_hastatus
-  on_client_disconnected:
-    - if:
-        condition:
-          lambda: 'return (0 == client_info.find("Home Assistant "));'
-        then:
-          - lvgl.widget.hide: lbl_hastatus
-
-ota:
-  - platform: esphome
-    password: "9169daeb729bac3aef66d7320dd2ea52"
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  domain: .home.cowley.tech
-  reboot_timeout:
-    minutes: 10
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "Panel01 Fallback Hotspot"
-    password: "gSoEuEx7vc2j"
-
-captive_portal:
-
-web_server:
-
+#
+## Enable logging
+#logger:
+#
+## Enable Home Assistant API
+#api:
+#  encryption:
+#    key: "kDAX5GzPV7MDrYGVtTNGQH4VrvVrMzKzuy8YndRi9qs="
+#  on_client_connected:
+#    - if:
+#        condition:
+#          lambda: 'return (0 == client_info.find("Home Assistant "));'
+#        then:
+#          - lvgl.widget.show: lbl_hastatus
+#  on_client_disconnected:
+#    - if:
+#        condition:
+#          lambda: 'return (0 == client_info.find("Home Assistant "));'
+#        then:
+#          - lvgl.widget.hide: lbl_hastatus
+#
+#ota:
+#  - platform: esphome
+#    password: "9169daeb729bac3aef66d7320dd2ea52"
+#
+#wifi:
+#  ssid: !secret wifi_ssid
+#  password: !secret wifi_password
+#  domain: .home.cowley.tech
+#  reboot_timeout:
+#    minutes: 10
+#
+#  # Enable fallback hotspot (captive portal) in case wifi connection fails
+#  ap:
+#    ssid: "Panel01 Fallback Hotspot"
+#    password: "gSoEuEx7vc2j"
+#
+#captive_portal:
+#
+#web_server:
+#
 packages:
-  ui: !include ui/display.yaml
+  common: !include common/common.yaml
+#  display: !include display/display.yaml
+#  ui: !include_dir_merge_list ui/
 
 globals:
   - id: last_touch_time
@@ -78,80 +81,80 @@ color:
     hex: 51c0f2  # Blue color (for off state)
   - id: ha_yellow
     hex: FFA500 # Yellow color (for on state)
-#
-#light:
-#  - platform: monochromatic
-#    output: backlight_pwm
-#    name: Display Backlight
-#    id: backlight
-#    restore_mode: ALWAYS_ON
-#
-#output:
-#  - platform: ledc
-#    pin: GPIO21
-#    id: backlight_pwm
-#
-#spi:
-#  - id: spi_tft
-#    clk_pin: GPIO14
-#    mosi_pin: GPIO13
-#    miso_pin: GPIO12
-#  - id: spi_touch
-#    clk_pin: GPIO25
-#    mosi_pin: GPIO32
-#    miso_pin: GPIO39
-#
-#display:
-#  - platform: ili9xxx
-#    model: ili9341
-#    id: my_display
-#    spi_id: spi_tft
-#    cs_pin: GPIO15
-#    dc_pin: GPIO2
-#    dimensions: 
-#      height: 320
-#      width: 240
-#    transform: 
-#      swap_xy: True
-#      mirror_x: True
-#      mirror_y: True
-#    #rotation: 270
-#    invert_colors: false
-#    show_test_card: False
-#    color_palette: 8BIT
-#    color_order: RGB
-#    auto_clear_enabled: False
-#    #lambda: |-
-#    #  auto t = id(touch)->get_touch();
-#    #  if (t) // or touch.has_value()
-#    #    it.filled_circle(t.value().x, t.value().y, 10, ha_yellow);
-#
-#    
-#
-#touchscreen:
-#  - platform: xpt2046
-#    id: touch
-#    spi_id: spi_touch
-#    cs_pin: GPIO33
-#    transform: 
-#      swap_xy: False
-#      mirror_x: True
-#      mirror_y: False
-#    calibration: 
-#      x_max: 3718
-#      x_min: 187
-#      y_max: 3799
-#      y_min: 272
-#    on_release: 
-#      then:
-#        if:
-#          condition: lvgl.is_paused
-#          then:
-#            - logger.log: "LVGL resuming"
-#            - lvgl.resume:
-#            - lvgl.widget.redraw:
-#            - light.turn_on: backlight
-#    
+
+light:
+  - platform: monochromatic
+    output: backlight_pwm
+    name: Display Backlight
+    id: backlight
+    restore_mode: ALWAYS_ON
+
+output:
+  - platform: ledc
+    pin: GPIO21
+    id: backlight_pwm
+
+spi:
+  - id: spi_tft
+    clk_pin: GPIO14
+    mosi_pin: GPIO13
+    miso_pin: GPIO12
+  - id: spi_touch
+    clk_pin: GPIO25
+    mosi_pin: GPIO32
+    miso_pin: GPIO39
+
+display:
+  - platform: ili9xxx
+    model: ili9341
+    id: my_display
+    spi_id: spi_tft
+    cs_pin: GPIO15
+    dc_pin: GPIO2
+    dimensions: 
+      height: 320
+      width: 240
+    transform: 
+      swap_xy: True
+      mirror_x: True
+      mirror_y: True
+    #rotation: 270
+    invert_colors: false
+    show_test_card: False
+    color_palette: 8BIT
+    color_order: RGB
+    auto_clear_enabled: False
+    #lambda: |-
+    #  auto t = id(touch)->get_touch();
+    #  if (t) // or touch.has_value()
+    #    it.filled_circle(t.value().x, t.value().y, 10, ha_yellow);
+
+    
+
+touchscreen:
+  - platform: xpt2046
+    id: touch
+    spi_id: spi_touch
+    cs_pin: GPIO33
+    transform: 
+      swap_xy: False
+      mirror_x: True
+      mirror_y: False
+    calibration: 
+      x_max: 3718
+      x_min: 187
+      y_max: 3799
+      y_min: 272
+    on_release: 
+      then:
+        if:
+          condition: lvgl.is_paused
+          then:
+            - logger.log: "LVGL resuming"
+            - lvgl.resume:
+            - lvgl.widget.redraw:
+            - light.turn_on: backlight
+    
 time:
   - platform: homeassistant
     id: ha_time
@@ -235,96 +238,98 @@ lvgl:
       - logger.log: "LVGL is idle"
       - light.turn_off: backlight
       - lvgl.pause:
-  theme:
-    label:
-      text_font: normal_font
-    button:
-      bg_color: 0x2F8CD8
-      bg_grad_color: 0x005782
-      bg_grad_dir: VER
-      bg_opa: COVER
-      border_color: 0x0077b3
-      border_width: 1
-      text_color: 0xFFFFFF
-      pressed: # set some button colors to be different in pressed state
-        bg_color: 0x006699
-        bg_grad_color: 0x00334d
-      checked: # set some button colors to be different in checked state
-        bg_color: 0x1d5f96
-        bg_grad_color: 0x03324A
-        text_color: 0xfff300
-    buttonmatrix:
-      bg_opa: TRANSP
-      border_color: 0x0077b3
-      border_width: 0
-      text_color: 0xFFFFFF
-      pad_all: 0
-      items: # set all your buttonmatrix buttons to use your custom defined styles and font
-        bg_color: 0x2F8CD8
-        bg_grad_color: 0x005782
-        bg_grad_dir: VER
-        bg_opa: COVER
-        border_color: 0x0077b3
-        border_width: 1
-        text_color: 0xFFFFFF
-        text_font: normal_font
-        pressed:
-          bg_color: 0x006699
-          bg_grad_color: 0x00334d
-        checked:
-          bg_color: 0x1d5f96
-          bg_grad_color: 0x03324A
-          text_color: 0x005580
-    switch:
-      bg_color: 0xC0C0C0
-      bg_grad_color: 0xb0b0b0
-      bg_grad_dir: VER
-      bg_opa: COVER
-      checked:
-        bg_color: 0x1d5f96
-        bg_grad_color: 0x03324A
-        bg_grad_dir: VER
-        bg_opa: COVER
-      knob:
-        bg_color: 0xFFFFFF
-        bg_grad_color: 0xC0C0C0
-        bg_grad_dir: VER
-        bg_opa: COVER
-    slider:
-      border_width: 1
-      border_opa: 15%
-      bg_color: 0xcccaca
-      bg_opa: 15%
-      indicator:
-        bg_color: 0x1d5f96
-        bg_grad_color: 0x03324A
-        bg_grad_dir: VER
-        bg_opa: COVER
-      knob:
-        bg_color: 0x2F8CD8
-        bg_grad_color: 0x005782
-        bg_grad_dir: VER
-        bg_opa: COVER
-        border_color: 0x0077b3
-        border_width: 1
-        text_color: 0xFFFFFF
-
-  style_definitions:
-    - id: header_footer
-      bg_color: 0x2F8CD8
-      bg_grad_color: 0x005782
-      bg_grad_dir: VER
-      bg_opa: COVER
-      border_opa: TRANSP
-      radius: 0
-      pad_all: 0
-      pad_row: 0
-      pad_column: 0
-      border_color: 0x0077b3
-      text_color: 0xFFFFFF
-      width: 100%
-      height: 30
-
+  theme: !include ui/theme.yaml
+#  theme:
+#    label:
+#      text_font: normal_font
+#    button:
+#      bg_color: 0x2F8CD8
+#      bg_grad_color: 0x005782
+#      bg_grad_dir: VER
+#      bg_opa: COVER
+#      border_color: 0x0077b3
+#      border_width: 1
+#      text_color: 0xFFFFFF
+#      pressed: # set some button colors to be different in pressed state
+#        bg_color: 0x006699
+#        bg_grad_color: 0x00334d
+#      checked: # set some button colors to be different in checked state
+#        bg_color: 0x1d5f96
+#        bg_grad_color: 0x03324A
+#        text_color: 0xfff300
+#    buttonmatrix:
+#      bg_opa: TRANSP
+#      border_color: 0x0077b3
+#      border_width: 0
+#      text_color: 0xFFFFFF
+#      pad_all: 0
+#      items: # set all your buttonmatrix buttons to use your custom defined styles and font
+#        bg_color: 0x2F8CD8
+#        bg_grad_color: 0x005782
+#        bg_grad_dir: VER
+#        bg_opa: COVER
+#        border_color: 0x0077b3
+#        border_width: 1
+#        text_color: 0xFFFFFF
+#        text_font: normal_font
+#        pressed:
+#          bg_color: 0x006699
+#          bg_grad_color: 0x00334d
+#        checked:
+#          bg_color: 0x1d5f96
+#          bg_grad_color: 0x03324A
+#          text_color: 0x005580
+#    switch:
+#      bg_color: 0xC0C0C0
+#      bg_grad_color: 0xb0b0b0
+#      bg_grad_dir: VER
+#      bg_opa: COVER
+#      checked:
+#        bg_color: 0x1d5f96
+#        bg_grad_color: 0x03324A
+#        bg_grad_dir: VER
+#        bg_opa: COVER
+#      knob:
+#        bg_color: 0xFFFFFF
+#        bg_grad_color: 0xC0C0C0
+#        bg_grad_dir: VER
+#        bg_opa: COVER
+#    slider:
+#      border_width: 1
+#      border_opa: 15%
+#      bg_color: 0xcccaca
+#      bg_opa: 15%
+#      indicator:
+#        bg_color: 0x1d5f96
+#        bg_grad_color: 0x03324A
+#        bg_grad_dir: VER
+#        bg_opa: COVER
+#      knob:
+#        bg_color: 0x2F8CD8
+#        bg_grad_color: 0x005782
+#        bg_grad_dir: VER
+#        bg_opa: COVER
+#        border_color: 0x0077b3
+#        border_width: 1
+#        text_color: 0xFFFFFF
+#
+  style_definitions: !include ui/styles.yaml
+#  style_definitions:
+#    - id: header_footer
+#      bg_color: 0x2F8CD8
+#      bg_grad_color: 0x005782
+#      bg_grad_dir: VER
+#      bg_opa: COVER
+#      border_opa: TRANSP
+#      radius: 0
+#      pad_all: 0
+#      pad_row: 0
+#      pad_column: 0
+#      border_color: 0x0077b3
+#      text_color: 0xFFFFFF
+#      width: 100%
+#      height: 30
+#
   displays:
     - my_display
   touchscreens:
@@ -365,196 +370,198 @@ lvgl:
                 on_press:
                   then:
                     lvgl.page.next:
-  pages:
-     - id: office_page
-       widgets:
-        - obj:
-            align: TOP_MID
-            styles: header_footer
-            widgets:
-              - label:
-                  text: "Office"
-                  text_font: big_font
-                  text_align: CENTER
-                  align: CENTER
-                  text_color: 0xFFFFFF
-        # - label:
-              #    id: ui_time_label
-              #    grid_cell_column_pos: 0 # place the widget in
-              #    grid_cell_row_pos: 0 # the corresponding cell
-              #    text: "Loading..."
-              #    text_font: normal_font
-              #    text_color: 0xFFFFFF
-              #    bg_color: 0x000000
-        - obj:
-            align: CENTER
-            width: 240
-            height: 256
-            x: 4
-            y: 4
-            pad_all: 3
-            bg_opa: TRANSP
-            border_opa: TRANSP
-            layout:
-              type: GRID
-              grid_columns: [FR(1), FR(1), FR(1)] # equal
-              grid_rows: [FR(10), FR(30), FR(30), FR(30)] # like percents
-              pad_row: 6
-              pad_column: 8
-            widgets:
-              #- label:
-              #    id: ui_time_label
-              #    grid_cell_column_pos: 0 # place the widget in
-              #    grid_cell_row_pos: 0 # the corresponding cell
-              #    text: "Loading..."
-              #    text_font: normal_font
-              #    text_color: 0xFFFFFF
-              #    bg_color: 0x000000
-              
-              - button:
-                  id: office_temp_down
-                  widgets:
-                    - label:
-                        text: "\U000F0045" # mdi:arrow-down
-                        text_font: big_font
-                  grid_cell_column_pos: 0
-                  grid_cell_row_pos: 1
-                  grid_cell_x_align: STRETCH
-                  grid_cell_y_align: STRETCH
-                  on_click:
-                    - lvgl.spinbox.decrement: office_temp_spinbox
-              - spinbox:
-                  id: office_temp_spinbox
-                  align: CENTER
-                  text_align: CENTER
-                  text_font: big_font
-                  range_from: 14
-                  range_to: 20
-                  #step: 1
-                  rollover: false
-                  digits: 2
-                  decimal_places: 0
-
-                  grid_cell_column_pos: 1
-                  grid_cell_row_pos: 1
-                  grid_cell_x_align: STRETCH
-                  grid_cell_y_align: STRETCH
-
-                  on_value:
-                    then:
-                      - homeassistant.action:
-                          action: input_number.set_value
-                          data:
-                            value: !lambda return x;
-                            entity_id: input_number.office_target_temperature
-                
-              - button:
-                  id: office_temp_up
-                  widgets:
-                    - label:
-                        text: "\U000F005D" # mdi:arrow-up
-                        text_font: big_font
-                  grid_cell_column_pos: 2
-                  grid_cell_row_pos: 1
-                  grid_cell_x_align: STRETCH
-                  grid_cell_y_align: STRETCH
-                  on_click:
-                    - lvgl.spinbox.increment: office_temp_spinbox
-
-        # New button widget
-     - id: bedroom_page
-       widgets:
-        - obj:
-            align: TOP_MID
-            styles: header_footer
-            widgets:
-              - label:
-                  text: "Master bedroom"
-                  text_font: big_font
-                  text_align: CENTER
-                  align: CENTER
-                  text_color: 0xFFFFFF
-        - obj:
-            align: CENTER
-            width: 240
-            height: 256
-            x: 4
-            y: 4
-            pad_all: 3
-            bg_opa: TRANSP
-            border_opa: TRANSP
-            layout:
-              type: GRID
-              grid_columns: [FR(1), FR(1), FR(1)] # equal
-              grid_rows: [FR(10), FR(30), FR(30), FR(30)] # like percents
-              pad_row: 6
-              pad_column: 8
-            widgets:  
-              - button:
-                  id: light_btn
-                  grid_cell_column_pos: 0
-                  grid_cell_row_pos: 1
-                  grid_cell_x_align: STRETCH
-                  grid_cell_y_align: STRETCH
-                  checkable: true
-                  widgets:
-                    - label:
-                        align: CENTER
-                        text: 'Lamp'
-                        text_font: normal_font
-                  on_click:
-                    - homeassistant.action:
-                        action: light.toggle
-                        data:
-                          entity_id: light.0x04e3e5fffe318927
-#        - button:
-#            id: lamp_button
-#            x: 10
-#            y: 200
-#            width: 200
-#            height: 60
-#            on_press:
-#              - homeassistant.service:
-#                  service: light.toggle
-#                  data:
-#                    entity_id: light.0x04e3e5fffe318927
+  pages: !include ui/pages.yaml
+#  pages:
+#     - id: office_page
+#       widgets:
+#        - obj:
+#            align: TOP_MID
+#            styles: header_footer
 #            widgets:
 #              - label:
-#                  text: "Toggle Lamp"
+#                  text: "Office"
+#                  text_font: big_font
+#                  text_align: CENTER
+#                  align: CENTER
+#                  text_color: 0xFFFFFF
+#        # - label:
+#              #    id: ui_time_label
+#              #    grid_cell_column_pos: 0 # place the widget in
+#              #    grid_cell_row_pos: 0 # the corresponding cell
+#              #    text: "Loading..."
+#              #    text_font: normal_font
+#              #    text_color: 0xFFFFFF
+#              #    bg_color: 0x000000
+#        - obj:
+#            align: CENTER
+#            width: 240
+#            height: 256
+#            x: 4
+#            y: 4
+#            pad_all: 3
+#            bg_opa: TRANSP
+#            border_opa: TRANSP
+#            layout:
+#              type: GRID
+#              grid_columns: [FR(1), FR(1), FR(1)] # equal
+#              grid_rows: [FR(10), FR(30), FR(30), FR(30)] # like percents
+#              pad_row: 6
+#              pad_column: 8
+#            widgets:
+#              #- label:
+#              #    id: ui_time_label
+#              #    grid_cell_column_pos: 0 # place the widget in
+#              #    grid_cell_row_pos: 0 # the corresponding cell
+#              #    text: "Loading..."
+#              #    text_font: normal_font
+#              #    text_color: 0xFFFFFF
+#              #    bg_color: 0x000000
+#              
+#              - button:
+#                  id: office_temp_down
+#                  widgets:
+#                    - label:
+#                        text: "\U000F0045" # mdi:arrow-down
+#                        text_font: big_font
+#                  grid_cell_column_pos: 0
+#                  grid_cell_row_pos: 1
+#                  grid_cell_x_align: STRETCH
+#                  grid_cell_y_align: STRETCH
+#                  on_click:
+#                    - lvgl.spinbox.decrement: office_temp_spinbox
+#              - spinbox:
+#                  id: office_temp_spinbox
+#                  align: CENTER
+#                  text_align: CENTER
+#                  text_font: big_font
+#                  range_from: 14
+#                  range_to: 20
+#                  #step: 1
+#                  rollover: false
+#                  digits: 2
+#                  decimal_places: 0
+#
+#                  grid_cell_column_pos: 1
+#                  grid_cell_row_pos: 1
+#                  grid_cell_x_align: STRETCH
+#                  grid_cell_y_align: STRETCH
+#
+#                  on_value:
+#                    then:
+#                      - homeassistant.action:
+#                          action: input_number.set_value
+#                          data:
+#                            value: !lambda return x;
+#                            entity_id: input_number.office_target_temperature
+#                
+#              - button:
+#                  id: office_temp_up
+#                  widgets:
+#                    - label:
+#                        text: "\U000F005D" # mdi:arrow-up
+#                        text_font: big_font
+#                  grid_cell_column_pos: 2
+#                  grid_cell_row_pos: 1
+#                  grid_cell_x_align: STRETCH
+#                  grid_cell_y_align: STRETCH
+#                  on_click:
+#                    - lvgl.spinbox.increment: office_temp_spinbox
+#
+#        # New button widget
+#     - id: bedroom_page
+#       widgets:
+#        - obj:
+#            align: TOP_MID
+#            styles: header_footer
+#            widgets:
+#              - label:
+#                  text: "Master bedroom"
+#                  text_font: big_font
+#                  text_align: CENTER
+#                  align: CENTER
+#                  text_color: 0xFFFFFF
+#        - obj:
+#            align: CENTER
+#            width: 240
+#            height: 256
+#            x: 4
+#            y: 4
+#            pad_all: 3
+#            bg_opa: TRANSP
+#            border_opa: TRANSP
+#            layout:
+#              type: GRID
+#              grid_columns: [FR(1), FR(1), FR(1)] # equal
+#              grid_rows: [FR(10), FR(30), FR(30), FR(30)] # like percents
+#              pad_row: 6
+#              pad_column: 8
+#            widgets:  
+#              - button:
+#                  id: light_btn
+#                  grid_cell_column_pos: 0
+#                  grid_cell_row_pos: 1
+#                  grid_cell_x_align: STRETCH
+#                  grid_cell_y_align: STRETCH
+#                  checkable: true
+#                  widgets:
+#                    - label:
+#                        align: CENTER
+#                        text: 'Lamp'
+#                        text_font: normal_font
+#                  on_click:
+#                    - homeassistant.action:
+#                        action: light.toggle
+#                        data:
+#                          entity_id: light.0x04e3e5fffe318927
+##        - button:
+##            id: lamp_button
+##            x: 10
+##            y: 200
+##            width: 200
+##            height: 60
+##            on_press:
+##              - homeassistant.service:
+##                  service: light.toggle
+##                  data:
+##                    entity_id: light.0x04e3e5fffe318927
+##            widgets:
+##              - label:
+##                  text: "Toggle Lamp"
              
-font:
-  - file: "gfonts://Roboto"
-    id: big_font
-    size: 24
-    extras:
-      - file: "fonts/materialdesignicons-webfont.ttf"
-        glyphs: [
-          "\U000F02D1", # mdi-heart
-          "\U000F05D4", # mdi-airplane-landing
-          "\U000F0045", # mdi:arrow-down
-          "\U000F005D", # mdi:arrow-up
-          "\U000F05A9", # mdi:wifi
-          "\U000F0142", # mdi: chevron-right
-          "\U000F0141", # mdi:chevron-left
-          "\U000F02DC", # mdi:home
-        ]
-
-  - file: "gfonts://Roboto"
-    id: normal_font
-    size: 18
-    extras:
-      - file: "fonts/materialdesignicons-webfont.ttf"
-        glyphs: [
-          "\U000F02D1", # mdi-heart
-          "\U000F05D4", # mdi-airplane-landing
-          "\U000F0045", # mdi:arrow-down
-          "\U000F005D", # mdi:arrow-up
-          "\U000F05A9", # mdi:wifi
-          "\U000F0142", # mdi: chevron-right
-          "\U000F0141", # mdi:chevron-left
-          "\U000F02DC", # mdi:home
-        ]
-
+font: !include ui/fonts.yaml  
+#font:
+#  - file: "gfonts://Roboto"
+#    id: big_font
+#    size: 24
+#    extras:
+#      - file: "fonts/materialdesignicons-webfont.ttf"
+#        glyphs: [
+#          "\U000F02D1", # mdi-heart
+#          "\U000F05D4", # mdi-airplane-landing
+#          "\U000F0045", # mdi:arrow-down
+#          "\U000F005D", # mdi:arrow-up
+#          "\U000F05A9", # mdi:wifi
+#          "\U000F0142", # mdi: chevron-right
+#          "\U000F0141", # mdi:chevron-left
+#          "\U000F02DC", # mdi:home
+#        ]
+#
+#  - file: "gfonts://Roboto"
+#    id: normal_font
+#    size: 18
+#    extras:
+#      - file: "fonts/materialdesignicons-webfont.ttf"
+#        glyphs: [
+#          "\U000F02D1", # mdi-heart
+#          "\U000F05D4", # mdi-airplane-landing
+#          "\U000F0045", # mdi:arrow-down
+#          "\U000F005D", # mdi:arrow-up
+#          "\U000F05A9", # mdi:wifi
+#          "\U000F0142", # mdi: chevron-right
+#          "\U000F0141", # mdi:chevron-left
+#          "\U000F02DC", # mdi:home
+#        ]
+#
 
 interval:
   - interval: 50ms
@@ -574,4 +581,5 @@ interval:
           if (millis() - id(last_touch_time) > timeout) {
             id(backlight).turn_off();
           }
+
 

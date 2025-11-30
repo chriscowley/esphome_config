@@ -1,0 +1,157 @@
+#  pages:
+- id: office_page
+  widgets:
+   - obj:
+       align: TOP_MID
+       styles: header_footer
+       widgets:
+         - label:
+             text: "Office"
+             text_font: big_font
+             text_align: CENTER
+             align: CENTER
+             text_color: 0xFFFFFF
+   # - label:
+         #    id: ui_time_label
+         #    grid_cell_column_pos: 0 # place the widget in
+         #    grid_cell_row_pos: 0 # the corresponding cell
+         #    text: "Loading..."
+         #    text_font: normal_font
+         #    text_color: 0xFFFFFF
+         #    bg_color: 0x000000
+   - obj:
+       align: CENTER
+       width: 240
+       height: 256
+       x: 4
+       y: 4
+       pad_all: 3
+       bg_opa: TRANSP
+       border_opa: TRANSP
+       layout:
+         type: GRID
+         grid_columns: [FR(1), FR(1), FR(1)] # equal
+         grid_rows: [FR(10), FR(30), FR(30), FR(30)] # like percents
+         pad_row: 6
+         pad_column: 8
+       widgets:
+         #- label:
+         #    id: ui_time_label
+         #    grid_cell_column_pos: 0 # place the widget in
+         #    grid_cell_row_pos: 0 # the corresponding cell
+         #    text: "Loading..."
+         #    text_font: normal_font
+         #    text_color: 0xFFFFFF
+         #    bg_color: 0x000000
+         
+         - button:
+             id: office_temp_down
+             widgets:
+               - label:
+                   text: "\U000F0045" # mdi:arrow-down
+                   text_font: big_font
+             grid_cell_column_pos: 0
+             grid_cell_row_pos: 1
+             grid_cell_x_align: STRETCH
+             grid_cell_y_align: STRETCH
+             on_click:
+               - lvgl.spinbox.decrement: office_temp_spinbox
+         - spinbox:
+             id: office_temp_spinbox
+             align: CENTER
+             text_align: CENTER
+             text_font: big_font
+             range_from: 14
+             range_to: 20
+             #step: 1
+             rollover: false
+             digits: 2
+             decimal_places: 0
+
+             grid_cell_column_pos: 1
+             grid_cell_row_pos: 1
+             grid_cell_x_align: STRETCH
+             grid_cell_y_align: STRETCH
+
+             on_value:
+               then:
+                 - homeassistant.action:
+                     action: input_number.set_value
+                     data:
+                       value: !lambda return x;
+                       entity_id: input_number.office_target_temperature
+           
+         - button:
+             id: office_temp_up
+             widgets:
+               - label:
+                   text: "\U000F005D" # mdi:arrow-up
+                   text_font: big_font
+             grid_cell_column_pos: 2
+             grid_cell_row_pos: 1
+             grid_cell_x_align: STRETCH
+             grid_cell_y_align: STRETCH
+             on_click:
+               - lvgl.spinbox.increment: office_temp_spinbox
+
+   # New button widget
+- id: bedroom_page
+  widgets:
+   - obj:
+       align: TOP_MID
+       styles: header_footer
+       widgets:
+         - label:
+             text: "Master bedroom"
+             text_font: big_font
+             text_align: CENTER
+             align: CENTER
+             text_color: 0xFFFFFF
+   - obj:
+       align: CENTER
+       width: 240
+       height: 256
+       x: 4
+       y: 4
+       pad_all: 3
+       bg_opa: TRANSP
+       border_opa: TRANSP
+       layout:
+         type: GRID
+         grid_columns: [FR(1), FR(1), FR(1)] # equal
+         grid_rows: [FR(10), FR(30), FR(30), FR(30)] # like percents
+         pad_row: 6
+         pad_column: 8
+       widgets:  
+         - button:
+             id: light_btn
+             grid_cell_column_pos: 0
+             grid_cell_row_pos: 1
+             grid_cell_x_align: STRETCH
+             grid_cell_y_align: STRETCH
+             checkable: true
+             widgets:
+               - label:
+                   align: CENTER
+                   text: 'Lamp'
+                   text_font: normal_font
+             on_click:
+               - homeassistant.action:
+                   action: light.toggle
+                   data:
+                     entity_id: light.0x04e3e5fffe318927
+#    - button:
+#        id: lamp_button
+#        x: 10
+#        y: 200
+#        width: 200
+#        height: 60
+#        on_press:
+#          - homeassistant.service:
+#              service: light.toggle
+#              data:
+#                entity_id: light.0x04e3e5fffe318927
+#        widgets:
+#          - label:
+#              text: "Toggle Lamp"
+#
