@@ -1,0 +1,75 @@
+esphome:
+  name: "livingroom-sensors"
+  friendly_name: "livingroom-sensors"
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "Qn1AlQ52W+rgMNYncJQ4AdN2lDPsjfueCJuVfwE/xK0="
+
+ota:
+  - platform: esphome
+    password: "e341a73323eabe6f8d400d607c3334a1"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  domain: .home.cowley.tech
+  reboot_timeout: 
+    minutes: 10
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Gas Fallback Hotspot"
+    password: "pz7qDxdYVqSi"
+
+captive_portal:
+
+web_server:
+
+# Activates prometheus /metrics endpoint
+prometheus:
+
+i2c:
+  sda: GPIO8 # Sensor SDA pin
+  scl: GPIO9 # Sensor SCL pin
+  scan: true # Scan for I2C devices at boot
+  id: bus_a # I2C bus identifier
+
+# Definition of SCD4x sensors
+sensor:
+  - platform: scd4x
+    co2:
+      name: "CO2" # More descriptive name for Home Assistant
+    temperature:
+      name: "Temperature"
+      filters: 
+        - offset: -2
+    humidity:
+      name: "Humidity"
+    # Altitude compensation for more accurate CO2 measurements
+    altitude_compensation: "320m" # Replace with the altitude of your area!
+
+interval:
+  - interval: 60s
+    then:
+      - if:
+          condition:
+            not:
+              wifi.connected:
+          then:
+            - logger.log: "WiFi disconnected! Restarting WiFi..."
+            - button.press: restart_device
+
+button:
+  - platform: restart
+    name: "Restart Device"
+    id: restart_device
