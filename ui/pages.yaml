@@ -1,4 +1,16 @@
 #  pages:
+- id: home_page
+  widgets:
+    - obj:
+        align: TOP_MID
+        styles: header_footer
+        widgets:
+          - label:
+             text: "Home"
+             text_font: big_font
+             text_align: CENTER
+             align: CENTER
+             text_color: 0xFFFFFF
 - id: office_page
   widgets:
    - obj:
