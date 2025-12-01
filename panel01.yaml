@@ -185,6 +185,8 @@ sensor:
     id: panel01_temperature
     name: "Temperature"
     update_interval: 60s
+    filters:
+      - offset: -1.2
     on_value:
       then:
         - lvgl.label.update:
@@ -237,7 +239,7 @@ lvgl:
                 text: "\U000F02DC"
                 on_press:
                   then:
-                    lvgl.page.show: office_page
+                    lvgl.page.show: home_page
               - id: page_next
                 text: "\U000F0142"
                 on_press:
